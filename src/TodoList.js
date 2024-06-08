@@ -1,55 +1,62 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import './App.css';
 
+function App() {
+  const [tasks, setTasks] = useState([]);
+  const [task, setTask] = useState('');
 
-function TodoList() {
-    const [activity, setActivity]= useState("")
-    const [listData, setlistData]= useState([])
-    function addActivity(){
-     // setlistData([...listData, activity])
-     // console.log(listData)
-     setlistData((listData)=>{
-        const updatedList =[...listData,activity]
-        console.log(updatedList)
-        setActivity('');
-        return updatedList
-    })
-    
+  const addTask = () => {
+    if (task) {
+      setTasks([...tasks, { text: task, completed: false }]);
+      setTask('');
     }
-    function removeActivity(i){
-        const updatedListData = listData.filter((elem,id)=>{
-            return i!=id;
-        })
-        setlistData(updatedListData);
+  };
 
+  const toggleTaskCompletion = (index) => {
+    const newTasks = tasks.map((task, idx) => {
+      if (idx === index) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTasks(newTasks);
+  };
 
-    }
-    function removeAll(){
-        setlistData([])
-    }
-    return(
-        <>
-    <div className='container'>
-    <div className='header'>TodoList</div>
-    <input type='text' placeholder='Add Activity' value={activity} onChange={(e)=>setActivity(e.target.value)}/>
-    <button onClick={addActivity}>Add</button>
-    <p className='List-heading'>Here is Your List:</p>
-    {listData.length > 0 && listData.map((data,i)=>{
-        return(
-            <>
-            <p key={i}>
-                 <div className='listData'>{data}</div>
-                 <div className='btn-position'><button on onClick={()=>removeActivity(i)}>remove(-)</button></div>
+  const deleteTask = (index) => {
+    const newTasks = tasks.filter((_, idx) => idx !== index);
+    setTasks(newTasks);
+  };
 
-            </p>
-            </>
-        )
-    })}
-    {listData.length>=1 &&
-    <button onClick={removeAll}>Remove All</button>}
+  const clearAllTasks = () => {
+    setTasks([]);
+  };
+
+  return (
+    <div className="App">
+      <div className="todo-container">
+        <h1 className="title">To-Do List</h1>
+        <div className="input-container">
+          <input 
+            type="text" 
+            value={task} 
+            onChange={(e) => setTask(e.target.value)} 
+            placeholder="Add a new task..." 
+            className="task-input" 
+          />
+          <button onClick={addTask} className="add-button">Add</button>
+          <button onClick={clearAllTasks} className="clear-button">Clear</button>
+        </div>
+        <ul className="task-list">
+          {tasks.map((task, index) => (
+            <li key={index} className={`task-item ${task.completed ? 'completed' : ''}`}>
+              <span onClick={() => toggleTaskCompletion(index)}>{task.text}</span>
+              <button onClick={() => deleteTask(index)} className="delete-button">✕</button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-    </>
-    )
-    
-   
-  }
-  export default TodoList;
+  );
+}
+
+export default App;
